@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily News Feed — GATI Labour Mobility Sentiment Tracker</title>
+<link rel="stylesheet" href="./assets/gati.css">
+</head>
+<body>
+
+<div class="topbar"><div class="topbar-in">
+  <a class="brand" href="./index.html">GATI · Labour Mobility Sentiment Tracker</a>
+  <nav class="tabs">
+    <a href="./index.html">Dashboard</a>
+    <a href="./feed.html" class="active" data-carry="./feed.html">Daily feed</a>
+    <a href="./analysis.html" data-carry="./analysis.html">Analysis</a>
+  </nav>
+</div></div>
+
+<div class="page">
+  <main>
+    <div class="eyebrow">GATI Resource Center · Daily Feed</div>
+    <h1>Daily news feed</h1>
+    <p class="sub">Every item the daily briefing has logged, day by day — the headline, one-line summary and source, plus the tags each item carries. Click any tag to filter by it, or regroup the feed by country or theme.</p>
+
+    <button type="button" class="filters-toggle" id="filtersToggle">Show filters</button>
+    <div class="chips" id="chips" style="display:none"></div>
+
+    <div class="toolbar">
+      <div class="result-line" id="resultLine">Loading latest data…</div>
+      <div class="group-toggle">Group by
+        <div class="seg" id="groupSeg">
+          <button type="button" data-g="date" class="active">Date</button>
+          <button type="button" data-g="country">Country</button>
+          <button type="button" data-g="theme">Theme</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="stateMsg" class="state-msg">Loading latest data…</div>
+    <div id="feed"></div>
+
+    <footer>
+      <div><b>How to read the tags.</b> <b>Sentiment</b> is judged against GATI's thesis — India's workforce as a solution to developed-market shortages — not the tone of the article. <b>Theme</b> is the item's main topic; <b>Focus</b> is the briefing bucket it was filed under; <b>Country</b> lists the countries the development concerns (“India” alone means an India-only development). When grouped by country, an item covering several countries appears under each.</div>
+      <div style="margin-top:6px;" id="footNote"></div>
+    </footer>
+  </main>
+
+  <aside class="aside" id="filters" aria-label="Filters"></aside>
+</div>
+
+<script src="./assets/gati.js"></script>
+<script>
+(function(){
+  const G = window.GATI;
+  let group = new URLSearchParams(location.search).get('group') || 'date';
+  if(!['date','country','theme'].includes(group)) group = 'date';
+  let F = null, DATA = null;
+
+  const feed = document.getElementById('feed');
+
+  function sentMini(t){
+    const n = t.n || 1;
+    return `<span class="mini" title="${t.positive} positive · ${t.neutral} neutral · ${t.negative} negative">` +
+      G.SENT_ORDER.map(k => t[k] ? `<i style="width:${t[k]/n*100}%;background:${G.SENT[k].color}"></i>` : '').join('') + `</span>` +
+      `<span class="tl">` + G.SENT_ORDER.map(k => `<span style="color:${G.SENT[k].color}"><b>${G.SENT[k].arrow} ${t[k]}</b></span>`).join('') + `</span>`;
+  }
+
+  function card(i){
+    const st = F.state;
+    const on = (f, v) => st[f].has(v) ? ' on' : '';
+    const fav = G.favicon(i.host);
+    const initial = G.esc((i.source || '?').trim().charAt(0).toUpperCase());
+    const tags = [
+      `<button type="button" class="tag sent${on('sent', i.vibe)}" data-f="sent" data-v="${i.vibe}"><i style="background:${G.SENT[i.vibe].color}"></i>${G.SENT[i.vibe].label}</button>`,
+      `<button type="button" class="tag theme${on('theme', i.theme)}" data-f="theme" data-v="${G.esc(i.theme)}">${G.esc(i.theme)}</button>`,
+      ...i.buckets.map(b => `<button type="button" class="tag bucket${on('bucket', b)}" data-f="bucket" data-v="${G.esc(b)}">${G.esc(b)}</button>`),
+      ...i.countries.map(c => `<button type="button" class="tag country${on('country', c)}" data-f="country" data-v="${G.esc(c)}">${G.esc(c)}</button>`)
+    ].join('');
+    return `<article class="fcard" style="--c:${G.SENT[i.vibe].color}">
+      <a class="ft" href="${G.esc(i.url)}" target="_blank" rel="noopener noreferrer">${G.esc(i.headline)}</a>
+      ${i.summary ? `<p class="fs">${G.esc(i.summary)}</p>` : ''}
+      <div class="fmeta">
+        ${fav ? `<img src="${G.esc(fav)}" alt="" loading="lazy" onerror="this.outerHTML='<span class=&quot;fb&quot;>${initial}</span>'">` : `<span class="fb">${initial}</span>`}
+        <span class="src">${G.esc(i.source)}</span><span>|</span><span>${G.fmtDateYear(i.date)}</span>
+        ${i.top ? '<span class="badge top" title="Part of the main Slack bulletin (top 5–7)">★ Main bulletin</span>' : ''}
+        ${i.excluded ? '<span class="badge warn" title="This publisher is on the exclude list in the current briefing prompt (logged before the source gate)">Excluded source</span>' : ''}
+        ${i.repeat ? '<span class="badge rep" title="Same headline already logged on an earlier day">Repeat</span>' : ''}
+      </div>
+      <div class="ftags">${tags}</div>
+    </article>`;
+  }
+
+  function groups(items){
+    const m = new Map();
+    const put = (k, i) => { if(!m.has(k)) m.set(k, []); m.get(k).push(i); };
+    const order = (a, b) => b.date.localeCompare(a.date) || (b.top - a.top) || a.id - b.id;
+    items.forEach(i => {
+      if(group === 'date') put(i.date, i);
+      else if(group === 'country') i.countries.forEach(c => put(c, i));
+      else put(i.theme, i);
+    });
+    let keys = [...m.keys()];
+    if(group === 'date') keys.sort((a, b) => b.localeCompare(a));
+    else keys.sort((a, b) => m.get(b).length - m.get(a).length || a.localeCompare(b));
+    // within a day: main-bulletin items first (as in Slack); otherwise newest first
+    return keys.map(k => ({ key: k, items: group === 'date' ? m.get(k).sort((a, b) => (b.top - a.top) || a.id - b.id) : m.get(k).sort(order) }));
+  }
+
+  function render(){
+    const items = F.filtered();
+    G.renderChips(document.getElementById('chips'), F);
+    const days = new Set(items.map(i => i.date)).size;
+    document.getElementById('resultLine').innerHTML = `Showing <b>${items.length}</b> of ${DATA.items.length} items across <b>${days}</b> briefing day${days === 1 ? '' : 's'}`;
+    if(!items.length){
+      feed.innerHTML = '<div class="empty">No items match these filters. Try removing a chip above or hit <b>Reset all</b>.</div>';
+      return;
+    }
+    feed.innerHTML = groups(items).map(g => {
+      const t = G.tally(g.items);
+      const title = group === 'date' ? G.fmtDateLong(g.key) : (g.key === 'Unspecified' ? 'Unspecified / global' : g.key);
+      return `<section><div class="day-h"><h2>${G.esc(title)}</h2><span class="c">${g.items.length} item${g.items.length === 1 ? '' : 's'}</span>${sentMini(t)}</div>${g.items.map(card).join('')}</section>`;
+    }).join('');
+  }
+
+  // delegated: tag clicks toggle filters
+  feed.addEventListener('click', e => {
+    const b = e.target.closest('.tag'); if(!b) return;
+    F.toggle(b.dataset.f, b.dataset.v);
+  });
+  document.getElementById('groupSeg').addEventListener('click', e => {
+    const g = e.target.dataset && e.target.dataset.g; if(!g) return;
+    group = g; syncGroup(); F.changed();
+  });
+  function syncGroup(){
+    document.querySelectorAll('#groupSeg button').forEach(b => b.classList.toggle('active', b.dataset.g === group));
+  }
+  document.getElementById('filtersToggle').addEventListener('click', () => {
+    const a = document.getElementById('filters'); a.classList.toggle('open');
+    document.getElementById('filtersToggle').textContent = a.classList.contains('open') ? 'Hide filters' : 'Show filters';
+  });
+
+  GATI.loadItems().then(data => {
+    DATA = data;
+    if(!data.items.length){ document.getElementById('stateMsg').textContent = 'No data yet — the feed will populate after the first scheduled run.'; return; }
+    document.getElementById('stateMsg').style.display = 'none';
+    document.getElementById('footNote').innerHTML = `<b>Source:</b> data/items.csv, rebuilt each weekday from the briefing's machine-readable log. ${data.ignored ? data.ignored + ' placeholder row' + (data.ignored === 1 ? '' : 's') + ' (e.g. “quiet news day”) not shown.' : ''}`;
+    F = G.createFilters({ items: data.items, latest: data.latest, mount: document.getElementById('filters'),
+      extraUrl: () => group !== 'date' ? { group } : null, onChange: render });
+    syncGroup(); F.changed();
+  }).catch(err => {
+    const el = document.getElementById('stateMsg');
+    el.textContent = 'Could not load data/items.csv — check the file exists and the page is served over http(s), not opened as a local file.';
+    el.classList.add('error'); console.error(err);
+  });
+})();
+</script>
+</body>
+</html>
