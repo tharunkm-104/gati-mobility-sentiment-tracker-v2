@@ -32,5 +32,5 @@ settings:
       - link_shared
       - entity_details_requested
   org_deploy_enabled: false
-  socket_mode_enabled: false
+  socket_mode_enabled: true
   token_rotation_enabled: false
