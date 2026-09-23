@@ -323,37 +323,37 @@
   },
   {
     "date": "2026-09-18",
-    "green": 1,
-    "yellow": 1,
-    "red": 5,
-    "total": 7
+    "green": 2,
+    "yellow": 2,
+    "red": 6,
+    "total": 10
   },
   {
     "date": "2026-09-19",
-    "green": 2,
-    "yellow": 2,
-    "red": 2,
-    "total": 6
+    "green": 4,
+    "yellow": 4,
+    "red": 4,
+    "total": 12
   },
   {
     "date": "2026-09-20",
-    "green": 1,
+    "green": 2,
     "yellow": 0,
-    "red": 1,
-    "total": 2
+    "red": 2,
+    "total": 4
   },
   {
     "date": "2026-09-21",
-    "green": 2,
-    "yellow": 3,
-    "red": 4,
-    "total": 9
+    "green": 4,
+    "yellow": 6,
+    "red": 8,
+    "total": 18
   },
   {
     "date": "2026-09-22",
     "green": 0,
-    "yellow": 0,
-    "red": 1,
-    "total": 1
+    "yellow": 5,
+    "red": 2,
+    "total": 7
   }
 ]
