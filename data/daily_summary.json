@@ -254,79 +254,79 @@
   {
     "date": "2026-09-03",
     "green": 0,
-    "yellow": 2,
-    "red": 1,
-    "total": 3
+    "yellow": 4,
+    "red": 2,
+    "total": 6
   },
   {
     "date": "2026-09-04",
-    "green": 1,
+    "green": 2,
     "yellow": 0,
     "red": 0,
-    "total": 1
+    "total": 2
   },
   {
     "date": "2026-09-05",
     "green": 0,
     "yellow": 0,
-    "red": 1,
-    "total": 1
+    "red": 2,
+    "total": 2
   },
   {
     "date": "2026-09-07",
     "green": 0,
-    "yellow": 1,
-    "red": 2,
-    "total": 3
+    "yellow": 2,
+    "red": 4,
+    "total": 6
   },
   {
     "date": "2026-09-08",
-    "green": 1,
+    "green": 2,
     "yellow": 0,
     "red": 0,
-    "total": 1
+    "total": 2
   },
   {
     "date": "2026-09-09",
     "green": 0,
-    "yellow": 2,
+    "yellow": 4,
     "red": 0,
-    "total": 2
+    "total": 4
   },
   {
     "date": "2026-09-10",
-    "green": 1,
-    "yellow": 1,
-    "red": 1,
-    "total": 3
+    "green": 2,
+    "yellow": 2,
+    "red": 2,
+    "total": 6
   },
   {
     "date": "2026-09-15",
-    "green": 3,
-    "yellow": 3,
-    "red": 2,
-    "total": 8
+    "green": 6,
+    "yellow": 6,
+    "red": 4,
+    "total": 16
   },
   {
     "date": "2026-09-16",
-    "green": 1,
-    "yellow": 1,
+    "green": 2,
+    "yellow": 2,
     "red": 0,
-    "total": 2
+    "total": 4
   },
   {
     "date": "2026-09-17",
     "green": 0,
-    "yellow": 1,
+    "yellow": 2,
     "red": 0,
-    "total": 1
+    "total": 2
   },
   {
     "date": "2026-09-18",
     "green": 2,
     "yellow": 2,
-    "red": 6,
-    "total": 10
+    "red": 10,
+    "total": 14
   },
   {
     "date": "2026-09-19",
@@ -352,29 +352,29 @@
   {
     "date": "2026-09-22",
     "green": 0,
-    "yellow": 5,
+    "yellow": 10,
     "red": 2,
-    "total": 7
+    "total": 12
   },
   {
     "date": "2026-09-23",
     "green": 0,
-    "yellow": 3,
+    "yellow": 6,
     "red": 0,
-    "total": 3
+    "total": 6
   },
   {
     "date": "2026-09-24",
     "green": 0,
-    "yellow": 3,
+    "yellow": 6,
     "red": 0,
-    "total": 3
+    "total": 6
   },
   {
     "date": "2026-09-25",
     "green": 0,
-    "yellow": 1,
+    "yellow": 2,
     "red": 0,
-    "total": 1
+    "total": 2
   }
 ]
