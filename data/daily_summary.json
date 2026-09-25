@@ -362,5 +362,19 @@
     "yellow": 3,
     "red": 0,
     "total": 3
+  },
+  {
+    "date": "2026-09-24",
+    "green": 0,
+    "yellow": 3,
+    "red": 0,
+    "total": 3
+  },
+  {
+    "date": "2026-09-25",
+    "green": 0,
+    "yellow": 1,
+    "red": 0,
+    "total": 1
   }
 ]
